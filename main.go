@@ -7,11 +7,6 @@ import (
 	"math"
 )
 
-func deriv(x float32, f types.Function) float32 {
-	const h float32 = 1e-2
-	return (f(x+h) - f(x)) / h
-}
-
 func nextInterval(a, b float32, f types.Function, step float32) types.Interval {
 	var slice types.Interval
 	curr := a
@@ -44,8 +39,8 @@ func isolate(a, b float32, f types.Function, step float32) types.RootIntervalLis
 		xmax := sequence[n-1]
 		// tem pelo menos 1 raiz; se não tiver, ignora o intervalo
 		if f(xmin)*f(xmax) < 0 {
-			d1 := deriv(xmin, f)
-			d2 := deriv(xmax, f)
+			d1 := roots.Deriv(xmin, f)
+			d2 := roots.Deriv(xmax, f)
 			if d1*d2 >= 0 { // raiz única, boa
 				collection = append(collection, types.Interval{xmin, xmax})
 			} else {
@@ -75,7 +70,9 @@ func main() {
 		}
 		fmt.Println("]")
 		result, counter := roots.Bisection(r[0], r[len(r)-1], 0.6, 0.000001, f)
-		fmt.Printf("Raiz do intervalo: %.8f. Total de iterações: %d.\n", result, counter)
+		fmt.Printf("[Bissecção] Raiz do intervalo: %.8f. Total de iterações: %d.\n", result, counter)
+		result, counter = roots.Newton(r[0], r[len(r)-1], 0.000001, f, math.MaxInt16)
+		fmt.Printf("[Newton] Raiz do intervalo: %.8f. Total de iterações: %d.\n", result, counter)
 	}
 
 }
