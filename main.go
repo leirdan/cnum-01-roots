@@ -71,7 +71,7 @@ func main() {
 		fmt.Println("]")
 		result, counter := roots.Bisection(r[0], r[len(r)-1], 0.6, 0.000001, f)
 		fmt.Printf("[Bissecção] Raiz do intervalo: %.8f. Total de iterações: %d.\n", result, counter)
-		result, counter = roots.Newton(r[0], r[len(r)-1], 0.000001, f, math.MaxInt16)
+		result, counter = roots.Newton(r[0], r[len(r)-1], 0.000001, f, math.MaxUint16)
 		fmt.Printf("[Newton] Raiz do intervalo: %.8f. Total de iterações: %d.\n", result, counter)
 	}
 
