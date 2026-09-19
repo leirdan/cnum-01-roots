@@ -12,6 +12,19 @@ type Problem struct {
 	H        float64
 }
 
+type RootMethod func(inst Problem, epsilon float64) (float64, uint16)
+
+type NamedMethod struct {
+	Name   string
+	Method RootMethod
+}
+
+type RaceResult struct {
+	Root    float64
+	Counter uint16
+	Name    string
+}
+
 func (self Problem) IsolateRoots() RootIntervalList {
 	return isolateRec(self.Start, self.End, self.Function, self.H)
 }
