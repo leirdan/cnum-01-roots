@@ -1,20 +1,19 @@
 package main
 
 import (
+	"cnum/roots"
+	"cnum/types"
 	"fmt"
 	"math"
 )
 
-type Interval []float32
-type RootIntervalList []Interval
-
-func deriv(x float32, f func(float32) float32) float32 {
+func deriv(x float32, f types.Function) float32 {
 	const h float32 = 1e-2
 	return (f(x+h) - f(x)) / h
 }
 
-func nextInterval(a float32, b float32, f func(float32) float32, step float32) Interval {
-	var slice Interval
+func nextInterval(a, b float32, f types.Function, step float32) types.Interval {
+	var slice types.Interval
 	curr := a
 	for curr < b && f(a)*f(curr) >= 0 {
 		slice = append(slice, curr)
@@ -30,12 +29,12 @@ func nextInterval(a float32, b float32, f func(float32) float32, step float32) I
 	return slice
 }
 
-func isolate(a float32, b float32, f func(float32) float32, step float32) RootIntervalList {
-	var collection = RootIntervalList{}
+func isolate(a, b float32, f types.Function, step float32) types.RootIntervalList {
+	var collection = types.RootIntervalList{}
 	var curr float32 = a
 
 	for curr < b {
-		var sequence Interval = nextInterval(curr, b, f, step)
+		sequence := nextInterval(curr, b, f, step)
 		curr = sequence[len(sequence)-1] // atualiza pro elemento que parou
 		n := len(sequence)
 		if n == 1 {
@@ -48,7 +47,7 @@ func isolate(a float32, b float32, f func(float32) float32, step float32) RootIn
 			d1 := deriv(xmin, f)
 			d2 := deriv(xmax, f)
 			if d1*d2 >= 0 { // raiz única, boa
-				collection = append(collection, Interval{xmin, xmax})
+				collection = append(collection, types.Interval{xmin, xmax})
 			} else {
 				subintervals := isolate(xmin, xmax, f, step)
 				collection = append(collection, subintervals...)
@@ -61,21 +60,24 @@ func isolate(a float32, b float32, f func(float32) float32, step float32) RootIn
 
 func main() {
 	fmt.Println("Hello, world!")
-	var f = func(x float32) float32 {
+	var f types.Function = func(x float32) float32 {
 		return float32(math.Pow(float64(x), 3)) - 9*x + 5
 	}
 
-	rootsInterval := isolate(-4, 10, f, 0.01)
+	rootsInterval := isolate(-4, 10, f, 0.6)
 	for k, r := range rootsInterval {
 		fmt.Printf("Intervalo %d: [", k)
 		for i, el := range r {
-			fmt.Printf("%.2f", el)
+			fmt.Printf("%.8f", el)
 			if i != len(r)-1 {
 				fmt.Print(", ")
 			}
 		}
 		fmt.Println("]")
+		result, counter := roots.Bisection(r[0], r[len(r)-1], 0.6, 0.000001, f)
+		fmt.Printf("Raiz do intervalo: %.8f. Total de iterações: %d.\n", result, counter)
 	}
+
 }
 
 /*

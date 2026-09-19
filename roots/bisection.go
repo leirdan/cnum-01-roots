@@ -1,3 +1,29 @@
 package roots
 
-func Bisection(a int8) int8 { return 0 }
+import (
+	"cnum/types"
+	"math"
+)
+
+func Bisection(a, b, h, epsilon float32, f types.Function) (float32, int16) {
+	// root := candidate(a, b)
+	a_ := a
+	b_ := b
+	var root float32
+	var counter int16 = 1
+
+	for root = candidate(a, b); math.Abs(float64(f(root))) > float64(epsilon) && (b_-a_) > epsilon; root = candidate(a_, b_) {
+		if f(a_)*f(root) < 0 {
+			b_ = root
+		} else if f(b_)*f(root) < 0 {
+			a_ = root
+		}
+		counter++
+	}
+
+	return root, counter
+}
+
+func candidate(a, b float32) float32 {
+	return (a + b) / 2
+}
