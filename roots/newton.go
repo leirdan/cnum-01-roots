@@ -6,16 +6,18 @@ import (
 	"math/rand/v2"
 )
 
-func Newton(a, b, epsilon float32, f types.Function, kmax uint16) (float32, uint16) {
-	var root float32
+func Newton(inst types.Problem, epsilon float64, kmax uint16) (float64, uint16) {
+	var a = inst.Start
+	var b = inst.End
+	var root float64
 	var counter uint16 = 1
-	for root = a + float32(rand.Float64())*(b-a); math.Abs(float64(f(root))) > float64(epsilon) && counter < kmax; root = n_candidate(root, f) {
+	for root = a + rand.Float64()*(b-a); math.Abs(inst.Function(root)) > epsilon && counter < kmax; root = n_candidate(root, inst) {
 		counter++
 	}
 
 	return root, counter
 }
 
-func n_candidate(x float32, f types.Function) float32 {
-	return x - (f(x) / Deriv(x, f))
+func n_candidate(x float64, inst types.Problem) float64 {
+	return x - (inst.Function(x) / inst.Deriv(x))
 }

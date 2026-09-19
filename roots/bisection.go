@@ -5,16 +5,16 @@ import (
 	"math"
 )
 
-func Bisection(a, b, h, epsilon float32, f types.Function) (float32, uint16) {
-	a_ := a
-	b_ := b
-	var root float32
+func Bisection(inst types.Problem, epsilon float64) (float64, uint16) {
+	a_ := inst.Start
+	b_ := inst.End
+	var root float64
 	var counter uint16 = 1
 
-	for root = b_candidate(a, b); math.Abs(float64(f(root))) > float64(epsilon) && (b_-a_) > epsilon; root = b_candidate(a_, b_) {
-		if f(a_)*f(root) < 0 {
+	for root = b_candidate(a_, b_); math.Abs(inst.Function(root)) > epsilon && (b_-a_) > epsilon; root = b_candidate(a_, b_) {
+		if inst.Function(a_)*inst.Function(root) < 0 {
 			b_ = root
-		} else if f(b_)*f(root) < 0 {
+		} else if inst.Function(b_)*inst.Function(root) < 0 {
 			a_ = root
 		}
 		counter++
@@ -23,6 +23,6 @@ func Bisection(a, b, h, epsilon float32, f types.Function) (float32, uint16) {
 	return root, counter
 }
 
-func b_candidate(a, b float32) float32 {
+func b_candidate(a, b float64) float64 {
 	return (a + b) / 2
 }

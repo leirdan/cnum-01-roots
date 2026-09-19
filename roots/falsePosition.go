@@ -5,16 +5,16 @@ import (
 	"math"
 )
 
-func FalsePosition(a, b, h, epsilon float32, f types.Function) (float32, uint16) {
-	a_ := a
-	b_ := b
-	fa_ := f(a)
-	fb_ := f(b)
+func FalsePosition(inst types.Problem, epsilon float64) (float64, uint16) {
+	a_ := inst.Start
+	b_ := inst.End
+	fa_ := inst.Function(a_)
+	fb_ := inst.Function(b_)
 	root := fp_candidate(a_, b_, fa_, fb_)
-	froot := f(root)
+	froot := inst.Function(root)
 	var counter uint16 = 1
 
-	for math.Abs(float64(fb_-fa_)) > float64(epsilon) && math.Abs(float64(froot)) > float64(epsilon) {
+	for math.Abs(fb_-fa_) > epsilon && math.Abs(froot) > epsilon {
 		if fa_*froot < 0 {
 			b_ = root
 			fb_ = froot
@@ -24,7 +24,7 @@ func FalsePosition(a, b, h, epsilon float32, f types.Function) (float32, uint16)
 		}
 
 		root = fp_candidate(a_, b_, fa_, fb_)
-		froot = f(root)
+		froot = inst.Function(root)
 
 		counter++
 	}
@@ -32,6 +32,6 @@ func FalsePosition(a, b, h, epsilon float32, f types.Function) (float32, uint16)
 	return root, counter
 }
 
-func fp_candidate(a, b, fa, fb float32) float32 {
+func fp_candidate(a, b, fa, fb float64) float64 {
 	return (a*fb - b*fa) / (fb - fa)
 }
