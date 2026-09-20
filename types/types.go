@@ -23,7 +23,6 @@ type NamedMethod struct {
 type RaceResult struct {
 	Root    float64
 	Counter uint16
-	Name    string
 }
 
 type ResultStr struct {

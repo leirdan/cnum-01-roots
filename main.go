@@ -1,44 +1,3 @@
-// package main
-
-// import (
-// 	"cnum/roots"
-// 	"cnum/types"
-// 	"fmt"
-// 	"math"
-// )
-
-// func main() {
-// 	var instances []types.Problem
-// 	instances = append(instances, types.Problem{
-// 		Function: func(x float64) float64 {
-// 			return 2 * math.Pow(float64(x), 4)
-// 		}, Start: 0, End: 3, Id: 1, H: 0.6})
-// 	instances = append(instances, types.Problem{
-// 		Function: func(x float64) float64 {
-// 			return math.Pow(x, 3) - 9*x + 5
-// 		}, Start: -4, End: 4, Id: 1, H: 0.6})
-
-// 	// TODO: organizar melhor a impressão
-// 	rootsInterval := instances[len(instances)-1].IsolateRoots()
-// 	for k, r := range rootsInterval {
-// 		fmt.Printf("Intervalo %d: [", k)
-// 		for i, el := range r {
-// 			fmt.Printf("%.8f", el)
-// 			if i != len(r)-1 {
-// 				fmt.Print(", ")
-// 			}
-// 		}
-// 		fmt.Println("]")
-// 		result, counter := roots.Bisection(instances[len(instances)-1], 0.000001)
-// 		fmt.Printf("[Bissecção] Raiz do intervalo: %.8f. Total de iterações: %d.\n", result, counter)
-// 		result, counter = roots.FalsePosition(instances[len(instances)-1], 0.000001)
-// 		fmt.Printf("[Falsa Posição] Raiz do intervalo: %.8f. Total de iterações: %d.\n", result, counter)
-// 		result, counter = roots.Newton(instances[len(instances)-1], 0.000001, math.MaxUint16)
-// 		fmt.Printf("[Newton] Raiz do intervalo: %.8f. Total de iterações: %d.\n", result, counter)
-// 	}
-
-// }
-
 package main
 
 import (
@@ -52,24 +11,52 @@ import (
 func main() {
 	var instances []types.Problem
 
-	// Problema ID 1
+	const PRECISION float64 = 0.00000001
+
+	// f(x) = 2x^4 + 4x^3 + 3x^2 + 10x - 15
 	instances = append(instances, types.Problem{
 		Function: func(x float64) float64 {
 			return ((2 * math.Pow(float64(x), 4)) + (4 * math.Pow(float64(x), 3)) + (3 * math.Pow(float64(x), 2)) + (10 * x) - 15)
-		}, Start: 0, End: 3, Id: 1, H: 0.6})
+		},
+		GFunction: func(x float64) float64 {
+			return (15 - (2 * math.Pow(x, 4)) - (4 * math.Pow(x, 3)) - (3 * math.Pow(x, 2))) / 10.0
+		},
+		Start: 0, End: 3, Id: 1, H: 0.6})
 
-	// Problema ID 2
+	// f(x) = x^5 - 2x^4 + 9x^3 - 22x^2 - 4x + 24
 	instances = append(instances, types.Problem{
 		Function: func(x float64) float64 {
 			return math.Pow(x, 5) - (2*math.Pow(float64(x), 4) - (9*math.Pow(float64(x), 3) + (22*math.Pow(float64(x), 2) + (4 * x) - 24)))
-		}, Start: 0, End: 5, Id: 2, H: 0.7})
+		},
+		GFunction: func(x float64) float64 {
+			return (math.Pow(x, 5) - 2*math.Pow(x, 4) + 9*math.Pow(x, 3) - 22*math.Pow(x, 2) + 24) / 4.0
+		},
+		Start: 0, End: 5, Id: 2, H: 0.7})
 
+	// f(x) = 5x^3 + x^2 - e^(1-2x) + cos(x) + 20
+	instances = append(instances, types.Problem{
+		Function: func(x float64) float64 {
+			return 5*math.Pow(x, 3) + math.Pow(x, 2) - math.Exp(1-2*x) + math.Cos(x) + 20
+		},
+		GFunction: func(x float64) float64 {
+			return math.Sqrt(math.Exp(1-2*x) - 5*math.Pow(x, 3) - math.Cos(x) - 20)
+		},
+		Start: -5, End: 5, Id: 3, H: 0.5})
+
+	// f(x) = x*sin(x) + 4
 	instances = append(instances, types.Problem{
 		Function: func(x float64) float64 {
 			return (math.Sin(x) * x) + 4
-		}, Start: 1, End: 5, Id: 4, H: 0.5})
+		},
+		GFunction: func(x float64) float64 {
+			sinX := math.Sin(x)
+			if sinX == 0 {
+				return 0.1
+			}
+			return -4.0 / sinX
+		},
+		Start: 1, End: 5, Id: 4, H: 0.5})
 
-	// Declaramos a lista de métodos FORA do loop para não recriar a cada função
 	methods := []types.NamedMethod{
 		{Name: "Bissecção", Method: roots.Bisection},
 		{Name: "Falsa Posição", Method: roots.FalsePosition},
@@ -86,86 +73,74 @@ func main() {
 		},
 	}
 
-	// Tipo auxiliar declarado fora do loop
-	type ResultadoCorrida struct {
-		Name string
-		Root float64
-		Iter uint16
-	}
-
-	// O loop principal itera sobre CADA função que você adicionou em 'instances'
-	for idx, currentProblem := range instances {
-
+	for _, currentProblem := range instances {
 		fmt.Printf("\n=========================================================================\n")
-		fmt.Printf(" TESTANDO FUNÇÃO ID: %d (Índice no Array: %d)\n", currentProblem.Id, idx)
-		fmt.Printf(" Intervalo Inicial: [%.2f, %.2f] | Passo (H): %.2f\n", currentProblem.Start, currentProblem.End, currentProblem.H)
+		fmt.Printf(" FUNÇÃO ID: %d \n", currentProblem.Id)
+		fmt.Printf(" Intervalo Inicial: [%.2f, %.2f] | H: %.2f\n", currentProblem.Start, currentProblem.End, currentProblem.H)
 		fmt.Printf("=========================================================================\n\n")
 
 		rootsInterval := currentProblem.IsolateRoots()
-
-		fmt.Println("Intervalos encontrados:")
+		fmt.Println("Intervalos com raízes encontrados:")
 		if len(rootsInterval) == 0 {
 			fmt.Println("  Nenhum intervalo encontrado com raiz.")
-			continue // Pula para a próxima função se não achou raízes
+			continue
 		}
 
 		for k, r := range rootsInterval {
-			fmt.Printf("  %d: [%.8f, %.8f]\n", k, r[0], r[len(r)-1])
+			fmt.Printf("  %d: [%.12f, %.12f]\n", k, r[0], r[len(r)-1])
 		}
 		fmt.Println("-------------------------------------------------------------------------")
 
-		fmt.Println("Tempo Total de Execução por Método:")
+		fmt.Println("[EXECUÇÕES TRADICIONAIS]")
 		for _, m := range methods {
-			var totalIteracoes uint16 = 0
-			raizesEncontradas := []float64{}
+			var iterations uint16 = 0
+			foundRoots := []float64{}
 
-			inicioMetodo := time.Now()
+			startTime := time.Now()
 
 			for _, r := range rootsInterval {
 				intervalProblem := currentProblem
 				intervalProblem.Start = r[0]
 				intervalProblem.End = r[len(r)-1]
 
-				raiz, iteracoes := m.Method(intervalProblem, 0.000001)
+				root, its := m.Method(intervalProblem, PRECISION)
 
-				raizesEncontradas = append(raizesEncontradas, raiz)
-				totalIteracoes += iteracoes
+				foundRoots = append(foundRoots, root)
+				iterations += its
 			}
 
-			tempoMetodo := time.Since(inicioMetodo)
+			time := time.Since(startTime)
 
-			fmt.Printf("- %-15s | Tempo: %10v | Iterações (soma): %3d\n", m.Name, tempoMetodo, totalIteracoes)
+			fmt.Printf("- %-15s | Tempo: %10v | Iterações (soma): %3d\n", m.Name, time, iterations)
 			fmt.Printf("  Raízes: ")
-			for i, rz := range raizesEncontradas {
-				fmt.Printf("%.8f", rz)
-				if i < len(raizesEncontradas)-1 {
+			for i, rz := range foundRoots {
+				fmt.Printf("%.12f", rz)
+				if i < len(foundRoots)-1 {
 					fmt.Print(", ")
 				}
 			}
-			fmt.Println("\n")
+			fmt.Println("")
 		}
 
 		fmt.Println("-------------------------------------------------------------------------")
-		fmt.Println("Corrida Paralela (Goroutines):")
+		fmt.Println("[CORRIDA MALUCA]")
 
-		inicioCorrida := time.Now()
-		vencedores := []ResultadoCorrida{}
+		start := time.Now()
+		winners := []types.RaceResult{}
 
 		for _, r := range rootsInterval {
 			intervalProblem := currentProblem
 			intervalProblem.Start = r[0]
 			intervalProblem.End = r[len(r)-1]
 
-			winnerRoot, winnerCounter, winnerName := roots.ParallelRace(methods, intervalProblem, 0.000001)
-			vencedores = append(vencedores, ResultadoCorrida{winnerName, winnerRoot, winnerCounter})
+			winnerRoot, winnerCounter := roots.Chaotic(intervalProblem, PRECISION)
+			winners = append(winners, types.RaceResult{Root: winnerRoot, Counter: winnerCounter})
 		}
 
-		tempoCorrida := time.Since(inicioCorrida)
-
-		fmt.Printf("- Tempo total da corrida para todos os intervalos: %v\n\n", tempoCorrida)
-
-		for i, v := range vencedores {
-			fmt.Printf("  Intervalo %d: Vencedor: %-13s | Raiz: %.8f | Iterações: %d\n", i, v.Name, v.Root, v.Iter)
+		time := time.Since(start)
+		fmt.Printf("- Tempo Total de Execução: %10v \n", time)
+		for i, v := range winners {
+			fmt.Printf("- Intervalo %d: Raiz: %.12f | Iterações: %d\n", i, v.Root, v.Counter)
 		}
 	}
 }

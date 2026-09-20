@@ -10,10 +10,9 @@ func Chaotic(inst types.Problem, epsilon float64) (float64, uint16) {
 	var sharedRoot float64 = (inst.Start + inst.End) / 2.0
 
 	done := make(chan struct{})
-
 	chResult := make(chan types.ResultStr)
 
-	// passo de newton
+	// Goroutine do Newton
 	go func() {
 		h := 0.001
 		for {
@@ -34,30 +33,32 @@ func Chaotic(inst types.Problem, epsilon float64) (float64, uint16) {
 		}
 	}()
 
-	// passo do secante
-	// coloquei comentado pq ele tem uma lógica um pouquinho diferente e guarda dentro dele a última atualização do x, nn sei se vale a pena
-	// go func() {
-	// 	xPrev := inst.Start
-	// 	for {
-	// 		select {
-	// 		case <-done:
-	// 			return
-	// 		default:
-	// 			xCurr := sharedRoot
-	// 			fxCurr := inst.Function(xCurr)
-	// 			fxPrev := inst.Function(xPrev)
-
-	// 			if fxCurr != fxPrev {
-	// 				next := (xPrev*fxCurr - xCurr*fxPrev) / (fxCurr - fxPrev)
-	// 				sharedRoot = next
-	// 				xPrev = xCurr
-	// 			}
-	// 		}
-	// 	}
-	// }()
-
-	// Passo ponto fixo
+	// Goroutine do Secante
 	go func() {
+		xPrev := inst.Start
+		for {
+			select {
+			case <-done:
+				return
+			default:
+				xCurr := sharedRoot
+				fxCurr := inst.Function(xCurr)
+				fxPrev := inst.Function(xPrev)
+
+				if fxCurr != fxPrev {
+					next := (xPrev*fxCurr - xCurr*fxPrev) / (fxCurr - fxPrev)
+					sharedRoot = next
+					xPrev = xCurr
+				}
+			}
+		}
+	}()
+
+	// Goroutine do Ponto Fixo
+	go func() {
+		if inst.GFunction == nil {
+			return
+		}
 		for {
 			select {
 			case <-done:
@@ -68,8 +69,7 @@ func Chaotic(inst types.Problem, epsilon float64) (float64, uint16) {
 		}
 	}()
 
-	//  Thread observadora
-
+	// Goroutine observadora
 	go func() {
 		var iterations uint16 = 0
 		for {
