@@ -79,6 +79,11 @@ func main() {
 				return roots.Newton(inst, epsilon, math.MaxUint16)
 			},
 		},
+		{
+			Name: "Secante", Method: func(inst types.Problem, epsilon float64) (float64, uint16) {
+				return roots.Secant(inst, epsilon, math.MaxUint16)
+			},
+		},
 	}
 
 	// Tipo auxiliar declarado fora do loop
