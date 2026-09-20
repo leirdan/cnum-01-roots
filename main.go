@@ -133,7 +133,7 @@ func main() {
 			intervalProblem.Start = r[0]
 			intervalProblem.End = r[len(r)-1]
 
-			winnerRoot, winnerCounter := roots.Chaotic(intervalProblem, PRECISION)
+			winnerRoot, winnerCounter := roots.Chaotic(intervalProblem, PRECISION, math.MaxUint16)
 			winners = append(winners, types.RaceResult{Root: winnerRoot, Counter: winnerCounter})
 		}
 

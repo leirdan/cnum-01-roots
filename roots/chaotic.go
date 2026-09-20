@@ -6,7 +6,7 @@ import (
 	"math/rand/v2"
 )
 
-func Chaotic(inst types.Problem, epsilon float64) (float64, uint16) {
+func Chaotic(inst types.Problem, epsilon float64, kmax uint16) (float64, uint16) {
 	var sharedRoot float64 = (inst.Start + inst.End) / 2.0
 
 	done := make(chan struct{})
@@ -71,19 +71,14 @@ func Chaotic(inst types.Problem, epsilon float64) (float64, uint16) {
 
 	// Goroutine observadora
 	go func() {
-		var iterations uint16 = 0
-		for {
-			iterations++
-
+		for i := uint16(1); i < kmax; i++ {
 			snapshot := sharedRoot
-
 			if math.IsNaN(snapshot) || math.IsInf(snapshot, 0) {
 				sharedRoot = inst.Start + rand.Float64()*(inst.End-inst.Start)
 				continue
 			}
-
 			if math.Abs(inst.Function(snapshot)) < epsilon {
-				chResult <- types.ResultStr{Root: snapshot, Iter: iterations}
+				chResult <- types.ResultStr{Root: snapshot, Iter: i}
 				return
 			}
 		}
