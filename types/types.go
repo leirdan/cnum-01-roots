@@ -5,11 +5,12 @@ type Interval []float64
 type RootIntervalList []Interval
 
 type Problem struct {
-	Function Function
-	Start    float64
-	End      float64
-	Id       uint8
-	H        float64
+	Function  Function
+	GFunction Function
+	Start     float64
+	End       float64
+	Id        uint8
+	H         float64
 }
 
 type RootMethod func(inst Problem, epsilon float64) (float64, uint16)
@@ -23,6 +24,11 @@ type RaceResult struct {
 	Root    float64
 	Counter uint16
 	Name    string
+}
+
+type ResultStr struct {
+	Root float64
+	Iter uint16
 }
 
 func (self Problem) IsolateRoots() RootIntervalList {
