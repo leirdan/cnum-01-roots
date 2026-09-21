@@ -13,23 +13,23 @@ func main() {
 
 	const PRECISION float64 = 0.00000001
 
-	// f(x) = 2x^4 + 4x^3 + 3x^2 + 10x - 15
+	// f(x) = 2x^4 + 4x^3 + 3x^2 - 10x - 15
 	instances = append(instances, types.Problem{
 		Function: func(x float64) float64 {
-			return ((2 * math.Pow(float64(x), 4)) + (4 * math.Pow(float64(x), 3)) + (3 * math.Pow(float64(x), 2)) + (10 * x) - 15)
+			return 2*math.Pow(x, 4) + 4*math.Pow(x, 3) + 3*math.Pow(x, 2) - 10*x - 15
 		},
 		GFunction: func(x float64) float64 {
-			return (15 - (2 * math.Pow(x, 4)) - (4 * math.Pow(x, 3)) - (3 * math.Pow(x, 2))) / 10.0
+			return (2*math.Pow(x, 4) + 4*math.Pow(x, 3) + 3*math.Pow(x, 2) - 15) / 10.0
 		},
 		Start: 0, End: 3, Id: 1, H: 0.6})
 
-	// f(x) = x^5 - 2x^4 + 9x^3 - 22x^2 - 4x + 24
+	// f(x) = x^5 - 2x^4 - 9x^3 + 22x^2 + 4x - 24
 	instances = append(instances, types.Problem{
 		Function: func(x float64) float64 {
-			return math.Pow(x, 5) - (2*math.Pow(float64(x), 4) - (9*math.Pow(float64(x), 3) + (22*math.Pow(float64(x), 2) + (4 * x) - 24)))
+			return math.Pow(x, 5) - 2*math.Pow(x, 4) - 9*math.Pow(x, 3) + 22*math.Pow(x, 2) + 4*x - 24
 		},
 		GFunction: func(x float64) float64 {
-			return (math.Pow(x, 5) - 2*math.Pow(x, 4) + 9*math.Pow(x, 3) - 22*math.Pow(x, 2) + 24) / 4.0
+			return (-math.Pow(x, 5) + 2*math.Pow(x, 4) + 9*math.Pow(x, 3) - 22*math.Pow(x, 2) + 24) / 4.0
 		},
 		Start: 0, End: 5, Id: 2, H: 0.7})
 
@@ -69,6 +69,12 @@ func main() {
 		{
 			Name: "Secante", Method: func(inst types.Problem, epsilon float64) (float64, uint16) {
 				return roots.Secant(inst, epsilon, math.MaxUint16)
+			},
+		},
+		{
+			Name: "Ponto Fixo",
+			Method: func(inst types.Problem, epsilon float64) (float64, uint16) {
+				return roots.FixedPoint(inst, epsilon, math.MaxUint16)
 			},
 		},
 	}
