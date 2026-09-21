@@ -4,7 +4,6 @@ import (
 	"cnum/types"
 	"math"
 	"math/rand/v2"
-	"sync"
 )
 
 // Chaotic implements the strategy proposed in item 1.3: a "chaotic race"
@@ -40,18 +39,13 @@ import (
 // Output: the approximate root (always within [inst.Start, inst.End]) and
 // the number of iterations the watcher goroutine took to accept it.
 func Chaotic(inst types.Problem, epsilon float64, kmax uint16) (float64, uint16) {
-	var mu sync.Mutex
 	sharedRoot := (inst.Start + inst.End) / 2.0
 
 	read := func() float64 {
-		mu.Lock()
-		defer mu.Unlock()
 		return sharedRoot
 	}
 	write := func(v float64) {
-		mu.Lock()
 		sharedRoot = v
-		mu.Unlock()
 	}
 
 	done := make(chan struct{})
