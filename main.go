@@ -1,10 +1,12 @@
 package main
 
 import (
+	"cnum/graph"
 	"cnum/roots"
 	"cnum/types"
 	"fmt"
 	"math"
+	"os"
 	"time"
 )
 
@@ -79,6 +81,11 @@ func main() {
 		},
 	}
 
+	const graphsDir = "graphs"
+	if err := os.MkdirAll(graphsDir, 0755); err != nil {
+		fmt.Println("Aviso: não foi possível criar o diretório de gráficos:", err)
+	}
+
 	for _, currentProblem := range instances {
 		fmt.Printf("\n=========================================================================\n")
 		fmt.Printf(" FUNÇÃO ID: %d \n", currentProblem.Id)
@@ -94,6 +101,12 @@ func main() {
 
 		for k, r := range rootsInterval {
 			fmt.Printf("  %d: [%.12f, %.12f]\n", k, r[0], r[len(r)-1])
+		}
+
+		if err := graph.Plot(currentProblem, rootsInterval, graphsDir); err != nil {
+			fmt.Println("Aviso: não foi possível gerar o gráfico:", err)
+		} else {
+			fmt.Printf("Gráfico salvo em: %s/f%d.png e %s/f%d_zoom.png\n", graphsDir, currentProblem.Id, graphsDir, currentProblem.Id)
 		}
 		fmt.Println("-------------------------------------------------------------------------")
 

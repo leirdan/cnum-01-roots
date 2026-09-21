@@ -14,6 +14,7 @@ Implementação computacional das duas etapas de obtenção de raízes de funç�
 ```
 main.go            # monta os problemas, roda os métodos e imprime os resultados
 types/types.go      # Problem, tipos auxiliares e a etapa de Isolamento (Bolzano + corolário)
+graph/graph.go      # gera os gráficos das funções (item 1.1)
 roots/
   bisection.go      # Método da Bissecção
   falsePosition.go  # Método da Falsa Posição
@@ -26,7 +27,7 @@ roots/
 ## Como rodar
 
 ```bash
-go run .                # executa e imprime os resultados de todos os problemas
+go run .                # executa, imprime os resultados e gera os gráficos em graphs/
 go build ./...           # compila
 go run -race .            # roda com o detector de data race do Go
 ```
@@ -44,6 +45,12 @@ Implementado em [`types/types.go`](types/types.go), função `isolateRec`:
   `f'(x)` não muda de sinal nas pontas (`d1 * d2 >= 0`, ou seja, `f` é monótona
   ali), a raiz é única e o intervalo é aceito. Caso contrário, o subintervalo é
   reisolado recursivamente com o mesmo passo até isolar raízes únicas.
+- **Gráfico:** [`graph/graph.go`](graph/graph.go) (usa `gonum.org/v1/plot`,
+  biblioteca auxiliar — não faz parte do algoritmo em si) plota `f(x)` e marca
+  os extremos dos intervalos isolados. Como em algumas funções do enunciado a
+  escala do domínio completo esconde a troca de sinal, também é gerado um
+  gráfico "zoom" ao redor do(s) intervalo(s) isolado(s). Salvos em `graphs/`
+  ao rodar `go run .` (arquivos `f<Id>.png` e `f<Id>_zoom.png`).
 
 ## 1.2. Refinamento
 
@@ -78,10 +85,9 @@ valor compartilhado decide o resultado.
 
 ## Pendências para a entrega
 
-- [ ] Gráfico das funções (item 1.1 pede tabelamento **e** gráfico; hoje só há
-      impressão em texto no console)
 - [ ] Comentar em português `Bisection`, `FalsePosition`, `Newton` e `Secant`
       (`fixedPoint.go`, `types.go` e `chaotic.go` já estão documentados)
+- [ ] Preencher Sistema operacional / Hardware na seção 1.0
 - [ ] Relatório resumido (entrega ii do descritivo)
 - [ ] Lista de atividades por integrante (entrega iii do descritivo)
 
