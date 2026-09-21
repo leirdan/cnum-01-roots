@@ -1,8 +1,8 @@
-// Package graph gera o gráfico de uma função analisada (item 1.1 do
-// descritivo: "tabelamento e gráfico"). Não faz parte da atividade fim dos
-// algoritmos de isolamento/refinamento — é só uma ilustração visual — por
-// isso usa a biblioteca auxiliar gonum.org/v1/plot, permitida pelo
-// enunciado (item b).
+// Package graph generates the plot of an analyzed function (item 1.1 of the
+// assignment: "tabulation and graph"). It's not part of the core activity
+// of the isolation/refinement algorithms — it's just a visual illustration
+// — so it uses the auxiliary library gonum.org/v1/plot, allowed by the
+// assignment (item b).
 package graph
 
 import (
@@ -15,24 +15,24 @@ import (
 	"gonum.org/v1/plot/vg"
 )
 
-// Plot desenha dois gráficos de f: um no domínio completo [inst.Start,
-// inst.End] e outro (o "zoom") restrito a uma vizinhança dos subintervalos
-// já isolados por inst.IsolateRoots(). O zoom existe porque em funções como
-// f2 e f3 dos problemas do enunciado a escala do domínio completo é tão
-// grande que a troca de sinal (Teorema de Bolzano) fica achatada e some
-// visualmente perto do eixo x.
+// Plot draws two graphs of f: one over the full domain [inst.Start,
+// inst.End] and another (the "zoom") restricted to a neighborhood of the
+// subintervals already isolated by inst.IsolateRoots(). The zoom exists
+// because for functions like f2 and f3 from the assignment problems, the
+// scale of the full domain is so large that the sign change (Bolzano
+// Theorem) gets flattened and visually disappears near the x axis.
 //
-// Em ambos, é desenhada a reta y=0 (para visualizar a troca de sinal) e
-// marcações nos extremos de cada subintervalo isolado.
+// In both, the line y=0 is drawn (to visualize the sign change) along with
+// markers at the endpoints of each isolated subinterval.
 //
-// Entrada:
-//   - inst: problema a plotar (usa inst.Function, inst.Start, inst.End)
-//   - intervals: subintervalos isolados a destacar/enquadrar (pode ser nil,
-//     nesse caso só o gráfico de domínio completo é gerado)
-//   - dir: diretório de saída; os arquivos gerados são "f<Id>.png" e, se
-//     houver intervalos isolados, "f<Id>_zoom.png"
+// Input:
+//   - inst: problem to plot (uses inst.Function, inst.Start, inst.End)
+//   - intervals: isolated subintervals to highlight/frame (can be nil, in
+//     which case only the full-domain graph is generated)
+//   - dir: output directory; the generated files are "f<Id>.png" and, if
+//     there are isolated intervals, "f<Id>_zoom.png"
 //
-// Saída: erro, caso não seja possível gerar ou salvar alguma das imagens.
+// Output: error, in case some of the images can't be generated or saved.
 func Plot(inst types.Problem, intervals types.RootIntervalList, dir string) error {
 	full := fmt.Sprintf("%s/f%d.png", dir, inst.Id)
 	if err := plotRange(inst, inst.Start, inst.End, intervals, full); err != nil {
@@ -92,8 +92,6 @@ func plotRange(inst types.Problem, xMin, xMax float64, intervals types.RootInter
 	zero.Dashes = []vg.Length{vg.Points(3), vg.Points(3)}
 	p.Add(zero)
 
-	// rótulo explícito "y = 0" junto à reta, além do valor 0 que já aparece
-	// nos ticks do eixo Y
 	zeroLabel, err := plotter.NewLabels(plotter.XYLabels{
 		XYs:    plotter.XYs{{X: xMin, Y: 0}},
 		Labels: []string{"y = 0"},

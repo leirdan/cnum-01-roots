@@ -20,18 +20,12 @@ func main() {
 		Function: func(x float64) float64 {
 			return 2*math.Pow(x, 4) + 4*math.Pow(x, 3) + 3*math.Pow(x, 2) - 10*x - 15
 		},
-		GFunction: func(x float64) float64 {
-			return (2*math.Pow(x, 4) + 4*math.Pow(x, 3) + 3*math.Pow(x, 2) - 15) / 10.0
-		},
 		Start: 0, End: 3, Id: 1, H: 0.6})
 
 	// f(x) = x^5 - 2x^4 - 9x^3 + 22x^2 + 4x - 24
 	instances = append(instances, types.Problem{
 		Function: func(x float64) float64 {
 			return math.Pow(x, 5) - 2*math.Pow(x, 4) - 9*math.Pow(x, 3) + 22*math.Pow(x, 2) + 4*x - 24
-		},
-		GFunction: func(x float64) float64 {
-			return (-math.Pow(x, 5) + 2*math.Pow(x, 4) + 9*math.Pow(x, 3) - 22*math.Pow(x, 2) + 24) / 4.0
 		},
 		Start: 0, End: 5, Id: 2, H: 0.7})
 
@@ -40,22 +34,12 @@ func main() {
 		Function: func(x float64) float64 {
 			return 5*math.Pow(x, 3) + math.Pow(x, 2) - math.Exp(1-2*x) + math.Cos(x) + 20
 		},
-		GFunction: func(x float64) float64 {
-			return math.Sqrt(math.Exp(1-2*x) - 5*math.Pow(x, 3) - math.Cos(x) - 20)
-		},
 		Start: -5, End: 5, Id: 3, H: 0.5})
 
 	// f(x) = x*sin(x) + 4
 	instances = append(instances, types.Problem{
 		Function: func(x float64) float64 {
 			return (math.Sin(x) * x) + 4
-		},
-		GFunction: func(x float64) float64 {
-			sinX := math.Sin(x)
-			if sinX == 0 {
-				return 0.1
-			}
-			return -4.0 / sinX
 		},
 		Start: 1, End: 5, Id: 4, H: 0.5})
 

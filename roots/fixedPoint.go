@@ -5,19 +5,21 @@ import (
 	"math"
 )
 
-// FixedPoint encontra uma raiz de inst.Function pelo método do Ponto Fixo.
-// Em vez de exigir uma função de iteração g(x) fornecida manualmente, constrói
-// automaticamente g(x) = x - f(x)/λ, com λ estimado por pf_lambda a partir da
-// própria f, garantindo convergência (|g'(x)| < 1) no intervalo isolado.
+// FixedPoint finds a root of inst.Function using the Fixed Point method.
+// Instead of requiring a manually supplied iteration function g(x), it
+// automatically builds g(x) = x - f(x)/λ, with λ estimated by pf_lambda from
+// f itself, guaranteeing convergence (|g'(x)| < 1) within the isolated
+// interval.
 //
-// Entrada:
-//   - inst: problema já isolado, usando inst.Function, inst.Start e inst.End
-//     (inst.Start/inst.End definem o intervalo [a,b] onde a raiz foi isolada)
-//   - epsilon: precisão desejada, critério de parada |f(root)| <= epsilon
-//   - kmax: número máximo de iterações permitido
+// Input:
+//   - inst: already isolated problem, using inst.Function, inst.Start and
+//     inst.End (inst.Start/inst.End define the interval [a,b] where the
+//     root was isolated)
+//   - epsilon: desired precision, stopping criterion |f(root)| <= epsilon
+//   - kmax: maximum number of iterations allowed
 //
-// Saída: a raiz aproximada e a quantidade de iterações realizadas até
-// satisfazer o critério de parada (ou até atingir kmax).
+// Output: the approximate root and the number of iterations performed
+// until the stopping criterion is met (or kmax is reached).
 func FixedPoint(inst types.Problem, epsilon float64, kmax uint16) (float64, uint16) {
 	lambda := pf_lambda(inst)
 	root := b_candidate(inst.Start, inst.End)
@@ -31,27 +33,27 @@ func FixedPoint(inst types.Problem, epsilon float64, kmax uint16) (float64, uint
 	return root, counter
 }
 
-// pf_candidate calcula a próxima aproximação x_{k+1} = x_k - f(x_k)/λ da
-// iteração de ponto fixo.
+// pf_candidate computes the next approximation x_{k+1} = x_k - f(x_k)/λ of
+// the fixed point iteration.
 //
-// Entrada: x (aproximação atual), inst (para acessar inst.Function) e lambda
-// (constante estimada por pf_lambda).
+// Input: x (current approximation), inst (to access inst.Function) and
+// lambda (constant estimated by pf_lambda).
 //
-// Saída: a próxima aproximação x_{k+1}.
+// Output: the next approximation x_{k+1}.
 func pf_candidate(x float64, inst types.Problem, lambda float64) float64 {
 	return x - inst.Function(x)/lambda
 }
 
-// pf_lambda estima a constante λ usada para montar g(x) = x - f(x)/λ.
-// Amostra a derivada de f em vários pontos do intervalo [Start, End] e toma o
-// maior valor absoluto encontrado, com o mesmo sinal da derivada no ponto
-// médio e uma margem de segurança de 5%. Isso garante |λ| > max|f'(x)| no
-// intervalo, condição suficiente para que |g'(x)| = |1 - f'(x)/λ| < 1 e a
-// iteração de ponto fixo convirja.
+// pf_lambda estimates the constant λ used to build g(x) = x - f(x)/λ.
+// It samples the derivative of f at several points of the interval [Start,
+// End] and takes the largest absolute value found, with the same sign as
+// the derivative at the midpoint and a 5% safety margin. This guarantees
+// |λ| > max|f'(x)| in the interval, a sufficient condition for
+// |g'(x)| = |1 - f'(x)/λ| < 1 and for the fixed point iteration to converge.
 //
-// Entrada: inst (usa inst.Start, inst.End e inst.Deriv).
+// Input: inst (uses inst.Start, inst.End and inst.Deriv).
 //
-// Saída: o valor estimado de λ.
+// Output: the estimated value of λ.
 func pf_lambda(inst types.Problem) float64 {
 	const samples = 20
 
