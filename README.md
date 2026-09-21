@@ -1,4 +1,4 @@
-# Cálculo Numérico (DIM0404) — Avaliação 01
+# Cálculo Numérico (DIM0404): Avaliação 01
 
 Implementação computacional das duas etapas de obtenção de raízes de funções
 (Isolamento e Refinamento), feita em Go para a disciplina de Cálculo Numérico.
@@ -39,14 +39,14 @@ Implementado em [`types/types.go`](types/types.go), função `isolateRec`:
 - **Tabelamento:** percorre `[a, b]` em passos de tamanho `H` (via `nextInterval`),
   avaliando `f` em cada ponto.
 - **Teorema de Bolzano:** se `f` é contínua em `[xmin, xmax]` e
-  `f(xmin) * f(xmax) < 0`, existe pelo menos uma raiz nesse subintervalo — é essa
+  `f(xmin) * f(xmax) < 0`, existe pelo menos uma raiz nesse subintervalo: é essa
   troca de sinal que o tabelamento busca a cada passo.
 - **Corolário de unicidade:** dentro de um subintervalo com raiz garantida, se
   `f'(x)` não muda de sinal nas pontas (`d1 * d2 >= 0`, ou seja, `f` é monótona
   ali), a raiz é única e o intervalo é aceito. Caso contrário, o subintervalo é
   reisolado recursivamente com o mesmo passo até isolar raízes únicas.
 - **Gráfico:** [`graph/graph.go`](graph/graph.go) (usa `gonum.org/v1/plot`,
-  biblioteca auxiliar — não faz parte do algoritmo em si) plota `f(x)` e marca
+  biblioteca auxiliar, não faz parte do algoritmo em si) plota `f(x)` e marca
   os extremos dos intervalos isolados. Como em algumas funções do enunciado a
   escala do domínio completo esconde a troca de sinal, também é gerado um
   gráfico "zoom" ao redor do(s) intervalo(s) isolado(s). Salvos em `graphs/`
@@ -71,7 +71,7 @@ mínimo exigido):
 [`roots/chaotic.go`](roots/chaotic.go) implementa uma "corrida caótica": Newton,
 Secante e Ponto Fixo rodam em goroutines concorrentes compartilhando a mesma
 variável de raiz aproximada em memória, e uma goroutine observadora retorna
-assim que a precisão desejada é atingida — o primeiro método a "acertar" o
+assim que a precisão desejada é atingida: o primeiro método a "acertar" o
 valor compartilhado decide o resultado.
 
 ## 1.4. Funções analisadas
