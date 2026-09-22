@@ -6,38 +6,21 @@ import (
 	"math/rand/v2"
 )
 
-// Chaotic implements the strategy proposed in item 1.3: a "chaotic race"
-// where Newton, Secant and Fixed Point compete for the same approximate
-// root, held in a single shared variable (sharedRoot). Each method reads
-// the most recent value written by any of the others and computes its own
-// next approximation from it — it doesn't run in isolation with its own
-// sequence, but "surfs" on the progress made by the others.
+// Chaotic implements the "chaotic race" of item 1.3: Newton, Secant and
+// Fixed Point goroutines compete over a single shared approximation
+// (sharedRoot, initially the midpoint of the interval), each computing its
+// next value from whatever the others wrote last.
 //
-// sharedRoot is protected by a sync.Mutex (via read/write) because the four
-// goroutines below (Newton, Secant, Fixed Point and the watcher) read and
-// write it concurrently; without this mutual exclusion the access is a real
-// data race (confirmed with `go run -race`), which could corrupt the
-// read/written value.
+// sharedRoot is deliberately accessed with no synchronization, so this is a
+// real data race (`go run -race` reports it) and results vary between runs.
 //
-// The watcher goroutine also guarantees that the value accepted as the
-// result stays within the isolated interval [inst.Start, inst.End]: since
-// the methods write to the same variable without coordination, a Newton or
-// Fixed Point iteration can eventually "push" sharedRoot outside the
-// isolated interval and converge to another root of f, outside the
-// subinterval it was asked to refine. If that happens, the value is
-// discarded and the search restarts within the interval, instead of
-// accepting a root from outside it.
+// A watcher goroutine snapshots sharedRoot and, if it is NaN, ±Inf or outside
+// [inst.Start, inst.End], resets it to a random point in the interval;
+// otherwise it accepts the snapshot once |f(snapshot)| < epsilon. It runs at
+// most kmax-1 iterations; if none is accepted, Chaotic blocks forever.
 //
-// Input:
-//   - inst: already isolated problem (uses inst.Start/inst.End as the
-//     bounds of the valid interval, inst.Function and, for the Fixed Point
-//     goroutine, the same g(x) = x - f(x)/λ automatically built by
-//     pf_lambda, as in FixedPoint)
-//   - epsilon: desired precision, stopping criterion |f(root)| < epsilon
-//   - kmax: maximum number of iterations of the watcher goroutine
-//
-// Output: the approximate root (always within [inst.Start, inst.End]) and
-// the number of iterations the watcher goroutine took to accept it.
+// Returns the root (within [inst.Start, inst.End]) and the watcher iteration
+// at which it was accepted.
 func Chaotic(inst types.Problem, epsilon float64, kmax uint16) (float64, uint16) {
 	sharedRoot := (inst.Start + inst.End) / 2.0
 
