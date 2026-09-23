@@ -6,8 +6,8 @@ Implementação computacional das duas etapas de obtenção de raízes de funç�
 ## 1.0. Ambiente computacional
 
 - **Linguagem/Software:** Go `go1.27.1` (linux/amd64)
-- **Sistema operacional:** 
-- **Hardware (máquina de desenvolvimento):** 
+- **Sistema operacional:** Ubuntu 26.04 LTS
+- **Hardware (máquina de desenvolvimento):** AMD Ryzen 5 7600X, 16 GB RAM
 
 ## Estrutura do projeto
 
@@ -83,16 +83,26 @@ valor compartilhado decide o resultado.
 | 3 | 5x³ + x² − e^(1−2x) + cos(x) + 20          | [−5, 5]     | 0,5  |
 | 4 | x·sen(x) + 4                                | [1, 5]      | 0,5  |
 
-## Pendências para a entrega
+## Integrantes e atividades
 
-- [ ] Comentar em português `Bisection`, `FalsePosition`, `Newton` e `Secant`
-      (`fixedPoint.go`, `types.go` e `chaotic.go` já estão documentados)
-- [ ] Preencher Sistema operacional / Hardware na seção 1.0
-- [ ] Relatório resumido (entrega ii do descritivo)
-- [ ] Lista de atividades por integrante (entrega iii do descritivo)
+**André Gomes**
 
-## Integrantes
+- Revisão do código desenvolvido pelos demais integrantes do grupo
+- Implementação do método da falsa posição
+- Implementação do método caótico
+- Redação de parte do relatório
 
-- André Gomes
-- Andriel Vinicius
-- Maria Paz
+**Andriel Vinicius**
+
+- Implementação do método de Newton, bissecção e secante
+- Implementação do isolamento de raízes
+- Documentação do código
+- Redação de parte do relatório
+
+**María Paz**
+
+- Revisão do código desenvolvido pelos demais integrantes do grupo
+- Implementação do método de ponto fixo
+- Implementação dos testes
+- Implementação de gráficos
+- Redação dos experimentos e resultados
