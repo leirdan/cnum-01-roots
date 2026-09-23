@@ -5,6 +5,14 @@ import (
 	"math"
 )
 
+// Função que executa o algoritmo da Falsa Posição para encontrar a raiz de uma função.
+// O candidato inicial à raiz é calculado usando a função "fp_candidate", que realiza uma interpolação linear entre os extremos.
+// Cada iteração calcula o novo candidato a raiz e ajusta o intervalo e os valores da função de acordo com a mudança de sinal.
+// A iteração avança enquanto a precisão da função ou a distância entre as imagens dos extremos do intervalo não for cumprida.
+//
+// Input: Um Problem e uma taxa de precisão
+//
+// Output: Raiz encontrada e quantidade de iterações
 func FalsePosition(inst types.Problem, epsilon float64) (float64, uint16) {
 	a_ := inst.Start
 	b_ := inst.End

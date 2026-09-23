@@ -6,21 +6,16 @@ import (
 	"math/rand/v2"
 )
 
-// Chaotic implements the "chaotic race" of item 1.3: Newton, Secant and
-// Fixed Point goroutines compete over a single shared approximation
-// (sharedRoot, initially the midpoint of the interval), each computing its
-// next value from whatever the others wrote last.
+// Função que executa uma competição caótica entre os métodos de Newton, Secante e Ponto Fixo para encontrar a raiz de uma função.
+// Três goroutines concorrentes compartilham e atualizam uma mesma variável de candidato sem sincronização,
+// enquanto uma goroutine observadora monitora o estado atual.
+// A goroutine observadora valida se a aproximação está dentro do intervalo e cumpre a precisão esperada,
+// reiniciando o candidato aleatoriamente caso o valor divirja ou saia do intervalo.
+// A execução é encerrada assim que a precisão for satisfeita ou o limite de iterações da goroutine observadora for atingido.
 //
-// sharedRoot is deliberately accessed with no synchronization, so this is a
-// real data race (`go run -race` reports it) and results vary between runs.
+// Input: Um Problem, uma taxa de precisão e um limite máximo de iterações
 //
-// A watcher goroutine snapshots sharedRoot and, if it is NaN, ±Inf or outside
-// [inst.Start, inst.End], resets it to a random point in the interval;
-// otherwise it accepts the snapshot once |f(snapshot)| < epsilon. It runs at
-// most kmax-1 iterations; if none is accepted, Chaotic blocks forever.
-//
-// Returns the root (within [inst.Start, inst.End]) and the watcher iteration
-// at which it was accepted.
+// Output: Raiz encontrada e quantidade de iterações até a aceitação
 func Chaotic(inst types.Problem, epsilon float64, kmax uint16) (float64, uint16) {
 	sharedRoot := (inst.Start + inst.End) / 2.0
 
@@ -96,8 +91,6 @@ func Chaotic(inst types.Problem, epsilon float64, kmax uint16) (float64, uint16)
 
 			foraDoIntervalo := snapshot < inst.Start || snapshot > inst.End
 			if math.IsNaN(snapshot) || math.IsInf(snapshot, 0) || foraDoIntervalo {
-				// some goroutine diverged or "escaped" the isolated interval;
-				// discard it and restart the search within [Start, End]
 				write(inst.Start + rand.Float64()*(inst.End-inst.Start))
 				continue
 			}

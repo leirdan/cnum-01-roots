@@ -5,8 +5,15 @@ import (
 	"math"
 )
 
+// Função que executa o algoritmo da Secante para encontrar a raiz de uma função.
+// Dois chutes iniciais são calculados usando o ponto médio e a falsa posição dentro do intervalo do problema.
+// Cada iteração calcula o novo candidato usando a função "s_candidate", que aproxima a derivada por uma secante.
+// A iteração avança enquanto o critério da precisão da função, distância entre os pontos ou o limite máximo de iterações não for cumprido.
+//
+// Input: Um Problem, uma taxa de precisão e um limite máximo de iterações
+//
+// Output: Raiz encontrada e quantidade de iterações
 func Secant(inst types.Problem, epsilon float64, kmax uint16) (float64, uint16) {
-	// dois chutes iniciais: ponto médio e ponto da falsa posição
 	x1 := b_candidate(inst.Start, inst.End)
 	x2 := fp_candidate(inst.Start, inst.End, inst.Function(inst.Start), inst.Function(inst.End))
 	fx1 := inst.Function(x1)

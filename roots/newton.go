@@ -6,6 +6,14 @@ import (
 	"math/rand/v2"
 )
 
+// Função que executa o algoritmo de Newton-Raphson para encontrar a raiz de uma função.
+// O candidato inicial à raiz é escolhido aleatoriamente dentro do intervalo.
+// Cada iteração calcula o novo candidato usando a função "n_candidate", que utiliza a derivada da função no ponto atual.
+// A iteração avança enquanto a precisão ou o limite máximo de iterações não for cumprido.
+//
+// Input: Um Problem, uma taxa de precisão e um limite máximo de iterações
+//
+// Output: Raiz encontrada e quantidade de iterações
 func Newton(inst types.Problem, epsilon float64, kmax uint16) (float64, uint16) {
 	var a = inst.Start
 	var b = inst.End

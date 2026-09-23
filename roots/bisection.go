@@ -5,6 +5,14 @@ import (
 	"math"
 )
 
+// Função que executa o algoritmo da Bissecção para encontrar a raiz de uma função.
+// O candidato inicial à raiz é calculado usando a função "b_candidate", que retorna o ponto médio do intervalo.
+// Cada iteração calcula o novo candidato a raiz e ajusta o intervalo de acordo com a mudança de sinal entre raiz e extremos.
+// A iteração avança enquanto o critério da precisão ou da distância dos extremos do intervalo não for cumprido.
+//
+// Input: Um Problem e uma taxa de precisão
+//
+// Output: Raiz encontrada e quantidade de iterações
 func Bisection(inst types.Problem, epsilon float64) (float64, uint16) {
 	a_ := inst.Start
 	b_ := inst.End

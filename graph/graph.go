@@ -1,8 +1,3 @@
-// Package graph generates the plot of an analyzed function (item 1.1 of the
-// assignment: "tabulation and graph"). It's not part of the core activity
-// of the isolation/refinement algorithms — it's just a visual illustration
-// — so it uses the auxiliary library gonum.org/v1/plot, allowed by the
-// assignment (item b).
 package graph
 
 import (
@@ -15,24 +10,6 @@ import (
 	"gonum.org/v1/plot/vg"
 )
 
-// Plot draws two graphs of f: one over the full domain [inst.Start,
-// inst.End] and another (the "zoom") restricted to a neighborhood of the
-// subintervals already isolated by inst.IsolateRoots(). The zoom exists
-// because for functions like f2 and f3 from the assignment problems, the
-// scale of the full domain is so large that the sign change (Bolzano
-// Theorem) gets flattened and visually disappears near the x axis.
-//
-// In both, the line y=0 is drawn (to visualize the sign change) along with
-// markers at the endpoints of each isolated subinterval.
-//
-// Input:
-//   - inst: problem to plot (uses inst.Function, inst.Start, inst.End)
-//   - intervals: isolated subintervals to highlight/frame (can be nil, in
-//     which case only the full-domain graph is generated)
-//   - dir: output directory; the generated files are "f<Id>.png" and, if
-//     there are isolated intervals, "f<Id>_zoom.png"
-//
-// Output: error, in case some of the images can't be generated or saved.
 func Plot(inst types.Problem, intervals types.RootIntervalList, dir string) error {
 	full := fmt.Sprintf("%s/f%d.png", dir, inst.Id)
 	if err := plotRange(inst, inst.Start, inst.End, intervals, full); err != nil {
